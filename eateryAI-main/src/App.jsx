@@ -8,6 +8,7 @@ import ItemModal from './components/ItemModal'
 import CartPanel from './components/CartPanel'
 import CameraScanner from './components/CameraScanner'
 import PhotoGallery from './components/PhotoGallery'
+import RestaurantMap from './components/RestaurantMap'
 
 const confirmedItems = menuJson.menuItems.filter(i => !i['Nutrition Estimated'])
 const unconfirmedItems = menuJson.menuItems.filter(i => i['Nutrition Estimated'])
@@ -162,6 +163,8 @@ export default function App() {
           onSelect={setSelectedRestaurant}
           summary={menuJson.summary}
         />
+
+        <RestaurantMap />
 
         <MenuGrid groupedItems={groupedConfirmed} onItemClick={setSelectedItem} cart={cart} />
 
