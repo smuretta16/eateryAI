@@ -9,8 +9,9 @@
 
   body {
     background-color: #000000;
-    color: #ffffff; /* makes default text white */
+    color: #ffffff;
     overflow-x: hidden;
+    transition: background-color 180ms ease, color 180ms ease;
   }
 
   /* Custom scrollbar */
@@ -36,17 +37,15 @@
   }
 
   .chip {
-    @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer
-          border border-white bg-black text-white hover:bg-white hover:text-black;
+    @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer;
   }
 
   .chip-active {
-    @apply bg-white text-black border-white;
+    @apply border-transparent;
   }
 
   .menu-card {
-    @apply rounded-2xl overflow-hidden
-          transition-all duration-300 cursor-pointer bg-white;
+    @apply rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer;
   }
   .menu-card:hover {
     @apply shadow-card-hover;
@@ -80,4 +79,20 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 9999;
+}
+
+.theme-light .chip {
+  @apply border-black/10 bg-white text-gray-900 hover:bg-white hover:border-black/20;
+}
+
+.theme-light .chip-active {
+  @apply border-black bg-black text-white;
+}
+
+.theme-dark .chip {
+  @apply border-white/10 bg-[#111317] text-white hover:bg-[#181b20] hover:border-white/20;
+}
+
+.theme-dark .chip-active {
+  @apply border-white bg-white text-black;
 }

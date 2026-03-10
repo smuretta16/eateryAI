@@ -20,7 +20,8 @@ async function scanMenuImage(imageDataUrl, signal) {
   return payload
 }
 
-export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved }) {
+export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved, theme }) {
+  const isLight = theme === 'light'
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
   const streamRef = useRef(null)
@@ -197,25 +198,29 @@ export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved 
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleClose} />
 
       <motion.div
-        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col"
+        className={`relative flex w-full max-w-lg flex-col overflow-hidden rounded-2xl shadow-2xl max-h-[90vh] ${
+          isLight ? 'bg-white' : 'border border-white/10 bg-[#111317]'
+        }`}
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 28 }}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
+        <div className={`flex flex-shrink-0 items-center justify-between border-b px-5 py-4 ${
+          isLight ? 'border-gray-100' : 'border-white/10'
+        }`}>
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className={`w-5 h-5 ${isLight ? 'text-black' : 'text-white'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
             </svg>
-            <h2 className="font-display font-bold text-gray-900 text-lg">Scan a Menu</h2>
+            <h2 className={`font-display text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Scan a Menu</h2>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+            className={`rounded-full p-1.5 transition-colors ${isLight ? 'hover:bg-gray-100' : 'hover:bg-white/8'}`}
           >
-            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className={`w-5 h-5 ${isLight ? 'text-gray-500' : 'text-white/60'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -224,7 +229,7 @@ export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved 
         <div className="p-5 overflow-y-auto flex-1">
           {mode === 'choose' && (
             <div className="space-y-3">
-              <p className="text-sm text-gray-500">
+              <p className={`text-sm ${isLight ? 'text-gray-500' : 'text-white/60'}`}>
                 Take a photo of a menu or upload one to scan it and add parsed items to Unconfirmed Data.
               </p>
 
@@ -236,29 +241,41 @@ export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved 
 
               <button
                 onClick={() => startCamera()}
-                className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-orange-200 hover:border-orange-400 hover:bg-orange-50 transition-all group"
+                className={`group flex w-full items-center gap-4 rounded-xl border-2 p-4 text-left transition-all ${
+                  isLight
+                    ? 'border-black/10 hover:border-black hover:bg-black/5'
+                    : 'border-white/10 hover:border-white/30 hover:bg-white/8'
+                }`}
               >
-                <div className="w-10 h-10 rounded-full bg-orange-100 group-hover:bg-orange-200 flex items-center justify-center flex-shrink-0 transition-colors">
-                  <svg className="w-5 h-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full transition-colors ${
+                  isLight ? 'bg-black/5 group-hover:bg-black/10' : 'bg-white/8 group-hover:bg-white/12'
+                }`}>
+                  <svg className={`w-5 h-5 ${isLight ? 'text-black' : 'text-white'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
                   </svg>
                 </div>
                 <div className="text-left">
-                  <p className="font-semibold text-gray-800">Use Camera</p>
-                  <p className="text-xs text-gray-500">Point your camera at a menu</p>
+                  <p className={`font-semibold ${isLight ? 'text-gray-800' : 'text-white'}`}>Use Camera</p>
+                  <p className={`text-xs ${isLight ? 'text-gray-500' : 'text-white/55'}`}>Point your camera at a menu</p>
                 </div>
               </button>
 
-              <label className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-all group cursor-pointer">
-                <div className="w-10 h-10 rounded-full bg-gray-100 group-hover:bg-gray-200 flex items-center justify-center flex-shrink-0 transition-colors">
-                  <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <label className={`group flex w-full cursor-pointer items-center gap-4 rounded-xl border-2 p-4 transition-all ${
+                isLight
+                  ? 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                  : 'border-white/10 hover:border-white/20 hover:bg-white/6'
+              }`}>
+                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full transition-colors ${
+                  isLight ? 'bg-gray-100 group-hover:bg-gray-200' : 'bg-white/8 group-hover:bg-white/12'
+                }`}>
+                  <svg className={`w-5 h-5 ${isLight ? 'text-gray-600' : 'text-white/70'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                   </svg>
                 </div>
                 <div className="text-left">
-                  <p className="font-semibold text-gray-800">Upload a Photo</p>
-                  <p className="text-xs text-gray-500">Choose an image from your device</p>
+                  <p className={`font-semibold ${isLight ? 'text-gray-800' : 'text-white'}`}>Upload a Photo</p>
+                  <p className={`text-xs ${isLight ? 'text-gray-500' : 'text-white/55'}`}>Choose an image from your device</p>
                 </div>
                 <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
               </label>
@@ -284,7 +301,7 @@ export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved 
 
               <canvas ref={canvasRef} className="hidden" />
 
-              <p className="text-xs text-gray-400 text-center">
+              <p className={`text-center text-xs ${isLight ? 'text-gray-400' : 'text-white/45'}`}>
                 Position the menu within the frame.
               </p>
 
@@ -294,13 +311,19 @@ export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved 
                     stopCamera()
                     setMode('choose')
                   }}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
+                  className={`flex-1 rounded-xl border py-2.5 text-sm font-medium transition-colors ${
+                    isLight
+                      ? 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                      : 'border-white/10 text-white/70 hover:bg-white/8 hover:text-white'
+                  }`}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={capturePhoto}
-                  className="flex-1 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-colors ${
+                    isLight ? 'bg-black text-white hover:bg-[#1c1c1c]' : 'bg-white text-black hover:bg-[#f1f1f1]'
+                  }`}
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="3.5" />
@@ -314,18 +337,24 @@ export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved 
 
           {mode === 'preview' && capturedImage && (
             <div className="space-y-4">
-              <div className="rounded-xl overflow-hidden border border-gray-200">
+              <div className={`overflow-hidden rounded-xl border ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
                 <img src={capturedImage} alt="Captured menu" className="w-full object-contain max-h-64" />
               </div>
 
               <div className="space-y-3">
-                <p className="text-sm text-gray-500 text-center">
+                <p className={`text-center text-sm ${isLight ? 'text-gray-500' : 'text-white/60'}`}>
                   Scan this menu to extract items and add them to the top of Unconfirmed Data.
                 </p>
 
                 {isScanning && (
-                  <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 flex items-center gap-3 text-sm text-orange-700">
-                    <div className="w-4 h-4 border-2 border-orange-300 border-t-orange-600 rounded-full animate-spin" />
+                  <div className={`flex items-center gap-3 rounded-xl border p-3 text-sm ${
+                    isLight
+                      ? 'border-black/10 bg-black/5 text-gray-900'
+                      : 'border-white/10 bg-white/8 text-white'
+                  }`}>
+                    <div className={`h-4 w-4 animate-spin rounded-full border-2 ${
+                      isLight ? 'border-black/20 border-t-black' : 'border-white/25 border-t-white'
+                    }`} />
                     Scanning this menu. This can take a few seconds.
                   </div>
                 )}
@@ -340,14 +369,20 @@ export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   onClick={reset}
-                  className="py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-60"
+                  className={`rounded-xl border py-2.5 text-sm font-medium transition-colors disabled:opacity-60 ${
+                    isLight
+                      ? 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                      : 'border-white/10 text-white/70 hover:bg-white/8 hover:text-white'
+                  }`}
                   disabled={isScanning}
                 >
                   Retake
                 </button>
                 <button
                   onClick={handleScanAndSave}
-                  className="py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+                  className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-colors disabled:opacity-60 ${
+                    isLight ? 'bg-black text-white hover:bg-[#1c1c1c]' : 'bg-white text-black hover:bg-[#f1f1f1]'
+                  }`}
                   disabled={isScanning}
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -361,22 +396,26 @@ export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved 
 
           {mode === 'saved' && (
             <div className="flex flex-col items-center gap-4 py-6 text-center">
-              <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-                <svg className="w-7 h-7 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <div className={`flex h-14 w-14 items-center justify-center rounded-full ${
+                isLight ? 'bg-black/8' : 'bg-white/10'
+              }`}>
+                <svg className={`w-7 h-7 ${isLight ? 'text-black' : 'text-white'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               </div>
 
               <div>
-                <p className="font-semibold text-gray-800">Menu scanned and saved!</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className={`font-semibold ${isLight ? 'text-gray-800' : 'text-white'}`}>Menu scanned and saved!</p>
+                <p className={`mt-1 text-sm ${isLight ? 'text-gray-400' : 'text-white/55'}`}>
                   Added {savedEntry?.parsedItemCount || 0} items to Unconfirmed Data
                   {savedEntry?.restaurantName ? ` for ${savedEntry.restaurantName}` : ''}.
                 </p>
               </div>
-              <div className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-left">
-                <p className="text-xs font-semibold text-gray-700 mb-2">OCR Preview</p>
-                <pre className="text-xs text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">
+              <div className={`w-full rounded-xl border p-3 text-left ${
+                isLight ? 'border-gray-200 bg-gray-50' : 'border-white/10 bg-white/6'
+              }`}>
+                <p className={`mb-2 text-xs font-semibold ${isLight ? 'text-gray-700' : 'text-white/80'}`}>OCR Preview</p>
+                <pre className={`whitespace-pre-wrap font-sans text-xs leading-relaxed ${isLight ? 'text-gray-600' : 'text-white/60'}`}>
                   {savedLines.slice(0, 6).join('\n')}
                   {savedLines.length > 6 ? '\n...' : ''}
                 </pre>
@@ -385,13 +424,19 @@ export default function CameraScanner({ knownRestaurants, onClose, onPhotoSaved 
               <div className="flex gap-3 w-full">
                 <button
                   onClick={reset}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
+                  className={`flex-1 rounded-xl border py-2.5 text-sm font-medium transition-colors ${
+                    isLight
+                      ? 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                      : 'border-white/10 text-white/70 hover:bg-white/8 hover:text-white'
+                  }`}
                 >
                   Add Another
                 </button>
                 <button
                   onClick={handleClose}
-                  className="flex-1 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition-colors"
+                  className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors ${
+                    isLight ? 'bg-black text-white hover:bg-[#1c1c1c]' : 'bg-white text-black hover:bg-[#f1f1f1]'
+                  }`}
                 >
                   Done
                 </button>

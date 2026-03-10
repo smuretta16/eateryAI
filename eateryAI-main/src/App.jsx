@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import menuJson from './data/menuData.json'
+import chipotleBuilderFallback from './data/chipotleBuilderData.json'
 import GoalTracker from './components/GoalTracker'
+import ChipotleBuilder from './components/ChipotleBuilder'
 import RestaurantFilter from './components/RestaurantFilter'
 import MenuGrid from './components/MenuGrid'
 import ItemModal from './components/ItemModal'
@@ -14,6 +16,18 @@ import { loadScannedMenuItems, loadScannedPhotos } from './utils/scannedMenus'
 const confirmedItems = menuJson.menuItems.filter(i => !i['Nutrition Estimated'])
 const unconfirmedItems = menuJson.menuItems.filter(i => i['Nutrition Estimated'])
 
+function getCartKey(item) {
+  return item['Cart Key'] || `${item.Restaurant}::${item['Item Name']}`
+}
+
+function loadInitialTheme() {
+  if (typeof window === 'undefined') {
+    return 'dark'
+  }
+
+  return window.localStorage.getItem('eatery-theme') === 'light' ? 'light' : 'dark'
+}
+
 export default function App() {
   const [selectedRestaurant, setSelectedRestaurant] = useState('All')
   const [selectedItem, setSelectedItem] = useState(null)
@@ -24,6 +38,11 @@ export default function App() {
   const [showGallery, setShowGallery] = useState(false)
   const [galleryScanCount, setGalleryScanCount] = useState(() => loadScannedPhotos().length)
   const [scannedMenuItems, setScannedMenuItems] = useState(() => loadScannedMenuItems())
+  const [chipotleBuilderData, setChipotleBuilderData] = useState(chipotleBuilderFallback)
+  const [chipotleBuilderLoading, setChipotleBuilderLoading] = useState(true)
+  const [theme, setTheme] = useState(loadInitialTheme)
+
+  const isLight = theme === 'light'
 
   const restaurants = useMemo(() => {
     return [...new Set([...menuJson.menuItems.map(item => item.Restaurant), ...scannedMenuItems.map(item => item.Restaurant)])].sort()
@@ -96,8 +115,8 @@ export default function App() {
 
   function addToCart(item, qty = 1) {
     setCart(prev => {
-      const key = `${item.Restaurant}::${item['Item Name']}`
-      const idx = prev.findIndex(e => `${e.item.Restaurant}::${e.item['Item Name']}` === key)
+      const key = getCartKey(item)
+      const idx = prev.findIndex(entry => getCartKey(entry.item) === key)
       if (idx >= 0) {
         const updated = [...prev]
         updated[idx] = { ...updated[idx], qty: updated[idx].qty + qty }
@@ -133,91 +152,121 @@ export default function App() {
     }
   }, [restaurants, selectedRestaurant])
 
+  useEffect(() => {
+    let ignore = false
+
+    async function loadChipotleBuilder() {
+      try {
+        const response = await fetch('/api/chipotle-builder')
+        const payload = await response.json().catch(() => ({}))
+
+        if (!response.ok || !payload?.data || ignore) {
+          return
+        }
+
+        setChipotleBuilderData(payload.data)
+      } catch {
+        // Keep the bundled fallback snapshot when the server route is unavailable.
+      } finally {
+        if (!ignore) {
+          setChipotleBuilderLoading(false)
+        }
+      }
+    }
+
+    void loadChipotleBuilder()
+
+    return () => {
+      ignore = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    window.localStorage.setItem('eatery-theme', theme)
+    document.body.style.backgroundColor = isLight ? '#f6f1e8' : '#000000'
+    document.body.style.color = isLight ? '#111827' : '#ffffff'
+    document.documentElement.style.colorScheme = isLight ? 'light' : 'dark'
+  }, [isLight, theme])
+
   return (
-    <div className="grain min-h-screen bg-black">
+    <div className={`grain min-h-screen ${isLight ? 'theme-light bg-[#f6f1e8]' : 'theme-dark bg-black'}`}>
       <GoalTracker
         goals={goals}
         totals={cartTotals}
         onGoalsChange={setGoals}
         cartCount={cart.reduce((s, e) => s + e.qty, 0)}
         onCartClick={() => setShowCart(true)}
+        onOpenCamera={() => setShowCamera(true)}
+        onOpenGallery={() => setShowGallery(true)}
+        galleryScanCount={galleryScanCount}
+        theme={theme}
+        onThemeToggle={() => setTheme(current => current === 'light' ? 'dark' : 'light')}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 bg-black">
-        {/* Header */}
-        <div className="pt-6 pb-4 flex items-end justify-between">
-          <div>
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">
-              Eatery
-            </h1>
-            <p className="mt-1 text-white">
-              {totalItemCount} items across {restaurants.length} restaurants
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {/* Saved Scans button */}
-            <button
-              onClick={() => setShowGallery(true)}
-              className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl border boreder-white/20 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium shadow-sm transition-all"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-              </svg>
-              Saved Scans
-              {galleryScanCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-orange-400 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                  {galleryScanCount}
-                </span>
-              )}
-            </button>
-            {/* Scan Menu button */}
-            <button
-              onClick={() => setShowCamera(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-400 hover:bg-orange-600 active:scale-95 text-white text-sm font-semibold shadow-md transition-all"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
-              </svg>
-              Scan Menu
-            </button>
-          </div>
-        </div>
-
+      <main className={`max-w-7xl mx-auto px-4 pt-4 sm:px-6 sm:pt-5 lg:pl-8 lg:pr-0 lg:pt-6 pb-24 ${isLight ? 'bg-[#f6f1e8]' : 'bg-black'}`}>
         <RestaurantFilter
           restaurants={restaurants}
           selected={selectedRestaurant}
           onSelect={setSelectedRestaurant}
           counts={restaurantCounts}
+          theme={theme}
         />
 
-        <RestaurantMap />
-
-        <MenuGrid groupedItems={groupedConfirmed} onItemClick={setSelectedItem} cart={cart} />
-
-        {filteredUnconfirmed.length > 0 && (
-          <div className="mt-6">
-            <div className="flex items-center gap-3 mb-6 pt-6 border-t-2 border-dashed border-white/30">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-                <h2 className="font-display text-xl sm:text-2xl font-bold text-white">Unconfirmed Data</h2>
-              </div>
-              <span className="text-xs text-white/70 bg black  px-2.5 py-1 rounded-full">
-                {filteredUnconfirmed.length} items
-              </span>
-            </div>
-            <p className="text-sm text-white mb-5 -mt-3">
-              {hasScannedUnconfirmed
-                ? 'Recently scanned menu items appear here first. OCR can misread names, prices, and nutrition values, and older items in this section may still use estimated nutrition.'
-                : 'Nutritional info for these items was estimated based on typical serving sizes and may not be accurate.'}
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.42fr)] lg:items-start lg:gap-8">
+          <div className="min-w-0">
+            <p className={`mb-6 -mt-2 text-sm ${isLight ? 'text-warmgray-dark' : 'text-white/80'}`}>
+              {totalItemCount} items across {restaurants.length} restaurants
             </p>
-            <div className="opacity-80">
-              <MenuGrid groupedItems={groupedUnconfirmed} onItemClick={setSelectedItem} cart={cart} />
-            </div>
+
+            <MenuGrid
+              groupedItems={groupedConfirmed}
+              onItemClick={setSelectedItem}
+              cart={cart}
+              theme={theme}
+              afterRestaurantName={selectedRestaurant === 'All' ? 'J Sushi Orange' : undefined}
+              afterRestaurantContent={selectedRestaurant === 'All' ? (
+                <ChipotleBuilder
+                  data={chipotleBuilderData}
+                  onAdd={addToCart}
+                  isLoading={chipotleBuilderLoading}
+                  theme={theme}
+                />
+              ) : null}
+            />
+
+            {filteredUnconfirmed.length > 0 && (
+              <div className="mt-6">
+                <div className={`flex items-center gap-3 mb-6 pt-6 border-t-2 border-dashed ${isLight ? 'border-black/10' : 'border-white/30'}`}>
+                  <div className="flex items-center gap-2">
+                    <svg className={`w-5 h-5 ${isLight ? 'text-gray-900' : 'text-white'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    <h2 className={`font-display text-xl sm:text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Unconfirmed Data</h2>
+                  </div>
+                  <span className={`text-xs px-2.5 py-1 rounded-full ${isLight ? 'text-warmgray-dark bg-black/5' : 'text-white/70 bg-black/20'}`}>
+                    {filteredUnconfirmed.length} items
+                  </span>
+                </div>
+                <p className={`text-sm mb-5 -mt-3 ${isLight ? 'text-warmgray-dark' : 'text-white'}`}>
+                  {hasScannedUnconfirmed
+                    ? 'Recently scanned menu items appear here first. OCR can misread names, prices, and nutrition values, and older items in this section may still use estimated nutrition.'
+                    : 'Nutritional info for these items was estimated based on typical serving sizes and may not be accurate.'}
+                </p>
+                <div className="opacity-80">
+                  <MenuGrid groupedItems={groupedUnconfirmed} onItemClick={setSelectedItem} cart={cart} theme={theme} />
+                </div>
+              </div>
+            )}
           </div>
-        )}
+
+          <aside className="mt-8 lg:sticky lg:top-24 lg:mt-0">
+            <RestaurantMap theme={theme} sidebar />
+          </aside>
+        </div>
       </main>
 
       <AnimatePresence>
@@ -226,25 +275,27 @@ export default function App() {
             knownRestaurants={restaurants}
             onClose={() => setShowCamera(false)}
             onPhotoSaved={refreshScannedContent}
+            theme={theme}
           />
         )}
       </AnimatePresence>
 
       <AnimatePresence>
         {showGallery && (
-          <PhotoGallery onClose={() => setShowGallery(false)} onPhotosChanged={refreshScannedContent} />
+          <PhotoGallery theme={theme} onClose={() => setShowGallery(false)} onPhotosChanged={refreshScannedContent} />
         )}
       </AnimatePresence>
 
       <AnimatePresence>
         {selectedItem && (
-          <ItemModal item={selectedItem} onClose={() => setSelectedItem(null)} onAdd={addToCart} />
+          <ItemModal theme={theme} item={selectedItem} onClose={() => setSelectedItem(null)} onAdd={addToCart} />
         )}
       </AnimatePresence>
 
       <AnimatePresence>
         {showCart && (
           <CartPanel
+            theme={theme}
             cart={cart}
             totals={cartTotals}
             goals={goals}

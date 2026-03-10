@@ -1,0 +1,429 @@
+{
+  "generatedAt": "2026-03-10",
+  "restaurant": {
+    "name": "Chipotle",
+    "restaurantId": 2116,
+    "locationName": "UC Irvine",
+    "address": "4255 Campus Dr Ste A116, Irvine, CA 92612-2646",
+    "menuUrl": "https://www.chipotle.com/nutrition-calculator",
+    "priceSource": "Live Chipotle restaurant menu for UC Irvine (#2116)",
+    "nutritionSource": "Official Chipotle nutrition facts"
+  },
+  "mealTypes": [
+    {
+      "id": "burrito",
+      "name": "Burrito",
+      "description": "Wrapped in a warm flour tortilla.",
+      "baseNutrition": {
+        "calories": 320,
+        "fat": 8,
+        "carbs": 50,
+        "protein": 8
+      },
+      "allows": {
+        "rice": true,
+        "beans": true,
+        "shellChoice": false,
+        "doubleWrap": true
+      },
+      "prices": {
+        "chicken": 9.8,
+        "steak": 11.55,
+        "carnitas": 10.55,
+        "barbacoa": 11.55,
+        "sofritas": 9.8,
+        "veggie": 9.8
+      }
+    },
+    {
+      "id": "bowl",
+      "name": "Bowl",
+      "description": "Built without the tortilla.",
+      "baseNutrition": {
+        "calories": 0,
+        "fat": 0,
+        "carbs": 0,
+        "protein": 0
+      },
+      "allows": {
+        "rice": true,
+        "beans": true,
+        "shellChoice": false,
+        "doubleWrap": false
+      },
+      "prices": {
+        "chicken": 9.8,
+        "steak": 11.55,
+        "carnitas": 10.55,
+        "barbacoa": 11.55,
+        "sofritas": 9.8,
+        "veggie": 9.8
+      }
+    },
+    {
+      "id": "salad",
+      "name": "Salad",
+      "description": "Served over Chipotle greens.",
+      "baseNutrition": {
+        "calories": 15,
+        "fat": 0,
+        "carbs": 3,
+        "protein": 1
+      },
+      "allows": {
+        "rice": true,
+        "beans": true,
+        "shellChoice": false,
+        "doubleWrap": false
+      },
+      "prices": {
+        "chicken": 9.8,
+        "steak": 11.55,
+        "carnitas": 10.55,
+        "barbacoa": 11.55,
+        "sofritas": 9.8,
+        "veggie": 9.8
+      }
+    },
+    {
+      "id": "tacos",
+      "name": "Tacos",
+      "description": "Three tacos with your shell choice.",
+      "baseNutrition": {
+        "calories": 0,
+        "fat": 0,
+        "carbs": 0,
+        "protein": 0
+      },
+      "allows": {
+        "rice": false,
+        "beans": true,
+        "shellChoice": true,
+        "doubleWrap": false
+      },
+      "prices": {
+        "chicken": 9.8,
+        "steak": 11.55,
+        "carnitas": 10.55,
+        "barbacoa": 11.55,
+        "sofritas": 9.8,
+        "veggie": 9.8
+      }
+    }
+  ],
+  "proteins": [
+    {
+      "id": "chicken",
+      "name": "Chicken",
+      "itemName": "Chicken",
+      "nutrition": {
+        "calories": 180,
+        "fat": 7,
+        "carbs": 0,
+        "protein": 32
+      },
+      "extraPrice": 3.85,
+      "includedPremium": null
+    },
+    {
+      "id": "steak",
+      "name": "Steak",
+      "itemName": "Steak",
+      "nutrition": {
+        "calories": 150,
+        "fat": 6,
+        "carbs": 1,
+        "protein": 21
+      },
+      "extraPrice": 5.6,
+      "includedPremium": null
+    },
+    {
+      "id": "carnitas",
+      "name": "Carnitas",
+      "itemName": "Carnitas",
+      "nutrition": {
+        "calories": 210,
+        "fat": 12,
+        "carbs": 0,
+        "protein": 23
+      },
+      "extraPrice": 4.6,
+      "includedPremium": null
+    },
+    {
+      "id": "barbacoa",
+      "name": "Barbacoa",
+      "itemName": "Beef Barbacoa",
+      "nutrition": {
+        "calories": 170,
+        "fat": 7,
+        "carbs": 2,
+        "protein": 24
+      },
+      "extraPrice": 5.6,
+      "includedPremium": null
+    },
+    {
+      "id": "sofritas",
+      "name": "Sofritas",
+      "itemName": "Sofritas",
+      "nutrition": {
+        "calories": 150,
+        "fat": 10,
+        "carbs": 9,
+        "protein": 8
+      },
+      "extraPrice": 3.85,
+      "includedPremium": null
+    },
+    {
+      "id": "veggie",
+      "name": "Veggie",
+      "itemName": "Veggie",
+      "nutrition": {
+        "calories": 0,
+        "fat": 0,
+        "carbs": 0,
+        "protein": 0
+      },
+      "extraPrice": 0,
+      "includedPremium": "guacamole"
+    }
+  ],
+  "shells": [
+    {
+      "id": "soft-flour",
+      "name": "Soft Flour Tortilla",
+      "itemId": "CMG-5501",
+      "nutrition": {
+        "calories": 240,
+        "fat": 7.5,
+        "carbs": 36,
+        "protein": 6
+      },
+      "default": true
+    },
+    {
+      "id": "crispy-corn",
+      "name": "Crispy Corn Tortilla",
+      "itemId": "CMG-5503",
+      "nutrition": {
+        "calories": 180,
+        "fat": 6,
+        "carbs": 27,
+        "protein": 3
+      },
+      "default": false
+    }
+  ],
+  "rices": [
+    {
+      "id": "white-rice",
+      "name": "White Rice",
+      "itemId": "CMG-5001",
+      "nutrition": {
+        "calories": 210,
+        "fat": 4,
+        "carbs": 40,
+        "protein": 4
+      }
+    },
+    {
+      "id": "brown-rice",
+      "name": "Brown Rice",
+      "itemId": "CMG-5002",
+      "nutrition": {
+        "calories": 210,
+        "fat": 6,
+        "carbs": 36,
+        "protein": 4
+      }
+    }
+  ],
+  "beans": [
+    {
+      "id": "black-beans",
+      "name": "Black Beans",
+      "itemId": "CMG-5051",
+      "nutrition": {
+        "calories": 130,
+        "fat": 1.5,
+        "carbs": 21,
+        "protein": 8
+      }
+    },
+    {
+      "id": "pinto-beans",
+      "name": "Pinto Beans",
+      "itemId": "CMG-5052",
+      "nutrition": {
+        "calories": 130,
+        "fat": 1.5,
+        "carbs": 21,
+        "protein": 8
+      }
+    }
+  ],
+  "toppings": [
+    {
+      "id": "fajita-veggies",
+      "name": "Fajita Veggies",
+      "itemId": "CMG-5101",
+      "nutrition": {
+        "calories": 20,
+        "fat": 0,
+        "carbs": 5,
+        "protein": 1
+      }
+    },
+    {
+      "id": "fresh-tomato-salsa",
+      "name": "Fresh Tomato Salsa",
+      "itemId": "CMG-5201",
+      "nutrition": {
+        "calories": 25,
+        "fat": 0,
+        "carbs": 4,
+        "protein": 0
+      }
+    },
+    {
+      "id": "roasted-corn-salsa",
+      "name": "Roasted Chili-Corn Salsa",
+      "itemId": "CMG-5202",
+      "nutrition": {
+        "calories": 80,
+        "fat": 1,
+        "carbs": 16,
+        "protein": 3
+      }
+    },
+    {
+      "id": "green-chili-salsa",
+      "name": "Tomatillo-Green Chili Salsa",
+      "itemId": "CMG-5203",
+      "nutrition": {
+        "calories": 15,
+        "fat": 0,
+        "carbs": 4,
+        "protein": 0
+      }
+    },
+    {
+      "id": "red-chili-salsa",
+      "name": "Tomatillo-Red Chili Salsa",
+      "itemId": "CMG-5204",
+      "nutrition": {
+        "calories": 30,
+        "fat": 0,
+        "carbs": 4,
+        "protein": 1
+      }
+    },
+    {
+      "id": "sour-cream",
+      "name": "Sour Cream",
+      "itemId": "CMG-5251",
+      "nutrition": {
+        "calories": 110,
+        "fat": 9,
+        "carbs": 2,
+        "protein": 2
+      }
+    },
+    {
+      "id": "cheese",
+      "name": "Cheese",
+      "itemId": "CMG-5252",
+      "nutrition": {
+        "calories": 110,
+        "fat": 8,
+        "carbs": 1,
+        "protein": 6
+      }
+    },
+    {
+      "id": "romaine-lettuce",
+      "name": "Romaine Lettuce",
+      "itemId": "CMG-5351",
+      "nutrition": {
+        "calories": 5,
+        "fat": 0,
+        "carbs": 1,
+        "protein": 0
+      }
+    }
+  ],
+  "premiums": [
+    {
+      "id": "guacamole",
+      "name": "Guacamole",
+      "itemId": "CMG-1001",
+      "nutrition": {
+        "calories": 230,
+        "fat": 22,
+        "carbs": 8,
+        "protein": 2
+      },
+      "price": 2.95
+    },
+    {
+      "id": "queso-blanco",
+      "name": "Queso Blanco",
+      "itemId": "CMG-1029",
+      "nutrition": {
+        "calories": 120,
+        "fat": 8,
+        "carbs": 9,
+        "protein": 5
+      },
+      "price": 1.7
+    }
+  ],
+  "extras": [
+    {
+      "id": "double-protein",
+      "name": "Double Protein",
+      "type": "protein"
+    },
+    {
+      "id": "double-wrap",
+      "name": "Double Wrap",
+      "itemId": "CMG-4026",
+      "price": 0.5,
+      "nutrition": {
+        "calories": 320,
+        "fat": 8,
+        "carbs": 50,
+        "protein": 8
+      },
+      "mealTypes": [
+        "burrito"
+      ]
+    },
+    {
+      "id": "chips",
+      "name": "Chips",
+      "itemId": "CMG-1002",
+      "price": 2,
+      "nutrition": {
+        "calories": 540,
+        "fat": 25,
+        "carbs": 73,
+        "protein": 7
+      },
+      "mealTypes": [
+        "burrito",
+        "bowl",
+        "salad",
+        "tacos"
+      ]
+    }
+  ],
+  "sourceNotes": [
+    "Prices vary by Chipotle location and are based on UC Irvine store #2116.",
+    "Nutrition is based on Chipotle official nutrition facts for standard portions.",
+    "Firecrawl refresh can be used to rescrape the live nutrition calculator and compare the cached snapshot to the current page."
+  ]
+}

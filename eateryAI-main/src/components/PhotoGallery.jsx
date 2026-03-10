@@ -7,7 +7,8 @@ function formatDate(isoString) {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
 }
 
-export default function PhotoGallery({ onClose, onPhotosChanged }) {
+export default function PhotoGallery({ onClose, onPhotosChanged, theme }) {
+  const isLight = theme === 'light'
   const [photos, setPhotos] = useState([])
   const [selected, setSelected] = useState(null)
 
@@ -30,21 +31,27 @@ export default function PhotoGallery({ onClose, onPhotosChanged }) {
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
       <motion.div
-        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col"
+        className={`relative flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl shadow-2xl max-h-[90vh] ${
+          isLight ? 'bg-white' : 'border border-white/10 bg-[#111317]'
+        }`}
         initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 28 }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
+        <div className={`flex flex-shrink-0 items-center justify-between border-b px-5 py-4 ${
+          isLight ? 'border-gray-100' : 'border-white/10'
+        }`}>
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className={`w-5 h-5 ${isLight ? 'text-black' : 'text-white'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg>
-            <h2 className="font-display font-bold text-gray-900 text-lg">Saved Scans</h2>
-            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{photos.length}</span>
+            <h2 className={`font-display text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Saved Scans</h2>
+            <span className={`rounded-full px-2 py-0.5 text-xs ${
+              isLight ? 'bg-gray-100 text-gray-400' : 'bg-white/8 text-white/55'
+            }`}>{photos.length}</span>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-gray-100 transition-colors">
-            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <button onClick={onClose} className={`rounded-full p-1.5 transition-colors ${isLight ? 'hover:bg-gray-100' : 'hover:bg-white/8'}`}>
+            <svg className={`w-5 h-5 ${isLight ? 'text-gray-500' : 'text-white/60'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -53,14 +60,14 @@ export default function PhotoGallery({ onClose, onPhotosChanged }) {
         <div className="flex flex-1 overflow-hidden">
 
           {/* Gallery grid */}
-          <div className={`overflow-y-auto p-4 ${selected ? 'w-1/2 border-r border-gray-100' : 'w-full'}`}>
+          <div className={`overflow-y-auto p-4 ${selected ? `w-1/2 border-r ${isLight ? 'border-gray-100' : 'border-white/10'}` : 'w-full'}`}>
             {photos.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-48 text-center">
-                <svg className="w-12 h-12 text-gray-200 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                <svg className={`mb-3 w-12 h-12 ${isLight ? 'text-gray-200' : 'text-white/15'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                 </svg>
-                <p className="text-gray-400 text-sm">No saved scans yet</p>
-                <p className="text-gray-300 text-xs mt-1">Scan or upload a menu to get started</p>
+                <p className={`text-sm ${isLight ? 'text-gray-400' : 'text-white/50'}`}>No saved scans yet</p>
+                <p className={`mt-1 text-xs ${isLight ? 'text-gray-300' : 'text-white/35'}`}>Scan or upload a menu to get started</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3">
@@ -69,16 +76,22 @@ export default function PhotoGallery({ onClose, onPhotosChanged }) {
                     key={photo.id}
                     onClick={() => setSelected(selected?.id === photo.id ? null : photo)}
                     className={`relative rounded-xl overflow-hidden border-2 cursor-pointer transition-all group ${
-                      selected?.id === photo.id ? 'border-orange-400 shadow-md' : 'border-gray-200 hover:border-orange-200'
+                      selected?.id === photo.id
+                        ? isLight
+                          ? 'border-black shadow-md'
+                          : 'border-white shadow-md'
+                        : isLight
+                          ? 'border-gray-200 hover:border-black/30'
+                          : 'border-white/10 hover:border-white/30'
                     }`}
                   >
                     <img src={photo.image} alt="Scanned menu" className="w-full h-32 object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="p-2 bg-white">
-                      <p className="text-xs text-gray-500 truncate">{formatDate(photo.scannedAt)}</p>
+                    <div className={`p-2 ${isLight ? 'bg-white' : 'bg-[#15181d]'}`}>
+                      <p className={`truncate text-xs ${isLight ? 'text-gray-500' : 'text-white/55'}`}>{formatDate(photo.scannedAt)}</p>
                       {photo.extractedText
-                        ? <span className="text-xs text-green-600 font-medium">{photo.parsedItemCount || 0} items imported</span>
-                        : <span className="text-xs text-gray-400">Photo only</span>
+                        ? <span className={`text-xs font-medium ${isLight ? 'text-black' : 'text-white'}`}>{photo.parsedItemCount || 0} items imported</span>
+                        : <span className={`text-xs ${isLight ? 'text-gray-400' : 'text-white/45'}`}>Photo only</span>
                       }
                     </div>
                     {/* Delete button */}
@@ -104,26 +117,30 @@ export default function PhotoGallery({ onClose, onPhotosChanged }) {
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.2 }}
               >
-                <img src={selected.image} alt="Scanned menu" className="w-full rounded-xl border border-gray-200 object-contain max-h-48" />
+                <img src={selected.image} alt="Scanned menu" className={`max-h-48 w-full rounded-xl border object-contain ${isLight ? 'border-gray-200' : 'border-white/10'}`} />
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">{formatDate(selected.scannedAt)}</p>
+                  <p className={`mb-1 text-xs ${isLight ? 'text-gray-400' : 'text-white/45'}`}>{formatDate(selected.scannedAt)}</p>
                   {selected.extractedText ? (
-                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-200">
-                      <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <div className={`rounded-xl border p-3 ${isLight ? 'border-gray-200 bg-gray-50' : 'border-white/10 bg-white/6'}`}>
+                      <p className={`mb-2 flex items-center gap-1 text-xs font-semibold ${isLight ? 'text-gray-700' : 'text-white/80'}`}>
+                        <svg className={`w-3.5 h-3.5 ${isLight ? 'text-black' : 'text-white'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                         </svg>
                         OCR Extracted Text
                       </p>
-                      <pre className="text-xs text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">{selected.extractedText}</pre>
+                      <pre className={`whitespace-pre-wrap font-sans text-xs leading-relaxed ${isLight ? 'text-gray-600' : 'text-white/60'}`}>{selected.extractedText}</pre>
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-400 italic">No extracted text is stored for this scan. Scan the menu again to import items.</p>
+                    <p className={`text-xs italic ${isLight ? 'text-gray-400' : 'text-white/45'}`}>No extracted text is stored for this scan. Scan the menu again to import items.</p>
                   )}
                 </div>
                 <button
                   onClick={() => handleDelete(selected.id)}
-                  className="mt-auto w-full py-2 rounded-xl border border-red-200 text-red-500 text-sm font-medium hover:bg-red-50 transition-colors"
+                  className={`mt-auto w-full rounded-xl border py-2 text-sm font-medium transition-colors ${
+                    isLight
+                      ? 'border-red-200 text-red-500 hover:bg-red-50'
+                      : 'border-red-500/30 text-red-300 hover:bg-red-500/10'
+                  }`}
                 >
                   Delete this scan
                 </button>

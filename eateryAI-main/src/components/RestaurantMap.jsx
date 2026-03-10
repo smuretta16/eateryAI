@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import restaurantData from '../data/restaurantData.json'
 
 const DEFAULT_CENTER = [33.7419795, -117.8231586]
 const DEFAULT_ZOOM = 13
 
-export default function RestaurantMap() {
+export default function RestaurantMap({ theme, sidebar = false }) {
+  const isLight = theme === 'light'
   const mapContainerRef = useRef(null)
   const mapRef = useRef(null)
 
@@ -53,13 +54,26 @@ export default function RestaurantMap() {
   }, [])
 
   return (
-    <section className="mt-8">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="font-display text-2xl font-bold text-white">Restaurant Map</h2>
-        <p className="text-xs text-warmgray">Use mouse wheel or +/- controls to zoom</p>
-      </div>
-      <div className="rounded-2xl overflow-hidden border border-cream shadow-card bg-white">
-        <div ref={mapContainerRef} className="h-[420px] w-full" />
+    <section className={`relative z-0 ${sidebar ? '' : 'mt-8'}`}>
+      <div
+        className={`relative isolate z-0 overflow-hidden shadow-card ${
+          sidebar
+            ? isLight
+              ? 'rounded-2xl border border-black/10 bg-white lg:rounded-r-none lg:border-r-0'
+              : 'rounded-2xl border border-white/10 bg-[#111317] lg:rounded-r-none lg:border-r-0'
+            : isLight
+              ? 'rounded-2xl border border-black/10 bg-white'
+              : 'rounded-2xl border border-white/10 bg-[#111317]'
+        }`}
+      >
+        <div
+          ref={mapContainerRef}
+          className={`relative z-0 w-full transition-[height] duration-300 ease-out ${
+            sidebar
+              ? 'h-[420px] lg:h-[calc(100vh-8.5rem)]'
+              : 'h-[420px]'
+          }`}
+        />
       </div>
     </section>
   )

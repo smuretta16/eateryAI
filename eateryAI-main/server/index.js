@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { loadChipotleBuilderData } from './chipotle.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.resolve(__dirname, '..')
@@ -66,6 +67,18 @@ const server = http.createServer(async (req, res) => {
           (count, page) => count + page.split('\n').filter(Boolean).length,
           0
         ),
+      })
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/chipotle-builder') {
+      const shouldRefresh =
+        url.searchParams.get('refresh') === '1' || url.searchParams.get('refresh') === 'true'
+      const builderData = await loadChipotleBuilderData({ refresh: shouldRefresh })
+
+      return sendJson(res, 200, {
+        ok: true,
+        data: builderData.snapshot,
+        firecrawl: builderData.firecrawl,
       })
     }
 

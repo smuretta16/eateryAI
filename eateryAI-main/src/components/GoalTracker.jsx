@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-function ProgressRing({ value, max, color, size = 38, strokeWidth = 3.5 }) {
+function ProgressRing({ value, max, color, trackClassName, size = 38, strokeWidth = 3.5 }) {
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const pct = Math.min(value / max, 1)
@@ -16,7 +16,7 @@ function ProgressRing({ value, max, color, size = 38, strokeWidth = 3.5 }) {
         fill="none"
         stroke="currentColor"
         strokeWidth={strokeWidth}
-        className="text-cream"
+        className={trackClassName}
       />
       <circle
         cx={size / 2}
@@ -34,7 +34,171 @@ function ProgressRing({ value, max, color, size = 38, strokeWidth = 3.5 }) {
   )
 }
 
-function GoalEditor({ goals, onSave, onClose }) {
+function ThemeSwitch({ isLight, onToggle }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={isLight}
+      aria-label={isLight ? 'Light mode enabled. Switch to dark mode.' : 'Dark mode enabled. Switch to light mode.'}
+      onClick={onToggle}
+      className={`relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border transition-all duration-200 ${
+        isLight
+          ? 'border-black/20 bg-[#ece8df] text-black hover:bg-white'
+          : 'border-white/40 bg-[#050608] text-white hover:border-white/55 hover:bg-[#0b0d11]'
+      }`}
+      title={isLight ? 'Switch to dark mode' : 'Enable light mode'}
+    >
+      <span
+        aria-hidden="true"
+        className={`absolute inset-0 rounded-[14px] ${
+          isLight
+            ? 'shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]'
+            : 'shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
+        }`}
+      />
+      <span
+        aria-hidden="true"
+        className="relative z-10 transition-transform duration-200"
+      >
+        {isLight ? (
+          <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m0 13.5V21m9-9h-2.25M5.25 12H3m14.485 6.485l-1.59-1.59M8.105 8.105l-1.59-1.59m10.97 0l-1.59 1.59M8.105 15.895l-1.59 1.59M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        ) : (
+          <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3c0 .6.06 1.2.18 1.79A7 7 0 0021 12.79z" />
+          </svg>
+        )}
+      </span>
+      <span className="sr-only">{isLight ? 'Light mode on' : 'Dark mode on'}</span>
+    </button>
+  )
+}
+
+function EateryLogo({ isLight }) {
+  return (
+    <img
+      src={isLight ? '/Greenlogoeatery.png' : '/Greenlogoeatery.png'}
+      alt="Eatery"
+      className="h-10 w-auto shrink-0 sm:h-12"
+      draggable="false"
+      style={{
+        filter: isLight ? 'brightness(0)' : 'brightness(0) invert(1)',
+      }}
+    />
+  )
+}
+
+function ScanMenu({ isLight, scanCount, onOpenCamera, onOpenGallery }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined
+    }
+
+    function handlePointerDown(event) {
+      if (!menuRef.current?.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    document.addEventListener('keydown', handleEscape)
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen])
+
+  function handleOpenCamera() {
+    setIsOpen(false)
+    onOpenCamera()
+  }
+
+  function handleOpenGallery() {
+    setIsOpen(false)
+    onOpenGallery()
+  }
+
+  return (
+    <div ref={menuRef} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setIsOpen(current => !current)}
+        className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-colors ${
+          isLight
+            ? 'border-black/10 bg-white text-black shadow-sm hover:bg-cream'
+            : 'border-white/10 bg-white text-black shadow-[0_10px_24px_rgba(255,255,255,0.12)] hover:bg-[#f3f3f3]'
+        }`}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        aria-label="Open scan menu"
+      >
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          role="menu"
+          className={`absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border p-2 shadow-xl ${
+            isLight ? 'border-black/10 bg-white' : 'border-white/10 bg-[#111317]'
+          }`}
+        >
+          <button
+            type="button"
+            onClick={handleOpenCamera}
+            className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm transition-colors ${
+              isLight ? 'text-gray-900 hover:bg-cream' : 'text-white hover:bg-white/8'
+            }`}
+          >
+            <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+            </svg>
+            <span>Upload a Photo</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleOpenGallery}
+            className={`mt-1 flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left text-sm transition-colors ${
+              isLight ? 'text-gray-900 hover:bg-cream' : 'text-white hover:bg-white/8'
+            }`}
+          >
+            <span className="flex items-center gap-3">
+              <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+              <span>Saved Scans</span>
+            </span>
+            {scanCount > 0 && (
+              <span className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold ${
+                isLight ? 'bg-black text-white' : 'bg-white text-black'
+              }`}>
+                {scanCount}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function GoalEditor({ goals, onSave, onClose, theme }) {
+  const isLight = theme === 'light'
   const [price, setPrice] = useState(String(goals.price))
   const [calories, setCalories] = useState(String(goals.calories))
   const [protein, setProtein] = useState(String(goals.protein))
@@ -58,23 +222,29 @@ function GoalEditor({ goals, onSave, onClose }) {
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/30 backdrop-blur-sm"
          onClick={onClose}>
-      <div className="bg-black rounded-2xl p-6 shadow-modal w-80" onClick={e => e.stopPropagation()}>
-        <p className="font-display text-lg text-white font-semibold mb-1">Edit Goals</p>
-        <p className="text-white text-sm mb-5">Set your daily targets</p>
+      <div
+        className={`w-80 rounded-2xl p-6 shadow-modal ${isLight ? 'bg-white' : 'border border-white/10 bg-[#111317]'}`}
+        onClick={e => e.stopPropagation()}
+      >
+        <p className={`mb-1 font-display text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>Edit Goals</p>
+        <p className={`mb-5 text-sm ${isLight ? 'text-warmgray-dark' : 'text-white/70'}`}>Set your daily targets</p>
         <div className="space-y-3">
           {fields.map(f => (
             <div key={f.label}>
-              <label className="text-xs font-medium text-cream uppercase tracking-wider mb-1 block">{f.label}</label>
+              <label className={`mb-1 block text-xs font-medium uppercase tracking-wider ${isLight ? 'text-warmgray-dark' : 'text-white/60'}`}>{f.label}</label>
               <div className="relative">
                 {f.prefix && (
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black font-medium">{f.prefix}</span>
+                  <span className={`absolute left-3.5 top-1/2 -translate-y-1/2 font-medium ${isLight ? 'text-black' : 'text-white/70'}`}>{f.prefix}</span>
                 )}
                 <input
                   type="number"
                   value={f.value}
                   onChange={e => f.onChange(e.target.value)}
-                  className={`w-full px-4 py-2.5 rounded-xl border bg-white text-base font-medium
-                             focus:outline-none focus:ring-2 ${f.color} ${f.prefix ? 'pl-7' : ''}`}
+                  className={`w-full rounded-xl border px-4 py-2.5 text-base font-medium focus:outline-none focus:ring-2 ${
+                    isLight
+                      ? 'bg-white text-gray-900'
+                      : 'border-white/10 bg-black/40 text-white'
+                  } ${f.color} ${f.prefix ? 'pl-7' : ''}`}
                   onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
                 />
               </div>
@@ -83,7 +253,11 @@ function GoalEditor({ goals, onSave, onClose }) {
         </div>
         <div className="flex gap-2 mt-5">
           <button onClick={onClose}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-medium text-warmgray hover:bg-cream transition-colors">
+                  className={`flex-1 rounded-xl py-2.5 text-sm font-medium transition-colors ${
+                    isLight
+                      ? 'text-warmgray-dark hover:bg-cream'
+                      : 'text-white/70 hover:bg-white/8 hover:text-white'
+                  }`}>
             Cancel
           </button>
           <button
@@ -97,8 +271,20 @@ function GoalEditor({ goals, onSave, onClose }) {
   )
 }
 
-export default function GoalTracker({ goals, totals, onGoalsChange, cartCount, onCartClick }) {
+export default function GoalTracker({
+  goals,
+  totals,
+  onGoalsChange,
+  cartCount,
+  onCartClick,
+  onOpenCamera,
+  onOpenGallery,
+  galleryScanCount,
+  theme,
+  onThemeToggle,
+}) {
   const [editing, setEditing] = useState(false)
+  const isLight = theme === 'light'
 
   const metrics = [
     {
@@ -132,13 +318,13 @@ export default function GoalTracker({ goals, totals, onGoalsChange, cartCount, o
 
   return (
     <>
-      <div className="sticky top-0 z-40 bg-black backdrop-blur-xl border-b border-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-black">
-          <div className="flex items-center justify-between h-16 gap-4 bg-black">
-            {/* Goal Metrics */}
-            <div className="flex items-center gap-5 sm:gap-8 overflow-x-auto no-scrollbar">
+      <div className={`sticky top-0 z-40 backdrop-blur-xl border-b ${isLight ? 'bg-[#f6f1e8]/95 border-black/10' : 'bg-black border-black'}`}>
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isLight ? 'bg-[#f6f1e8]/95' : 'bg-black'}`}>
+          <div className={`flex flex-wrap items-center justify-between gap-4 py-3 ${isLight ? 'bg-[#f6f1e8]/95' : 'bg-black'}`}>
+            <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden sm:gap-6">
+              <EateryLogo isLight={isLight} />
+              <div className="ml-auto flex min-w-0 items-center justify-end gap-5 overflow-x-auto no-scrollbar sm:gap-8">
               {metrics.map(m => {
-                const pct = Math.min((m.current / m.max) * 100, 100)
                 const isOver = m.current > m.max
                 return (
                   <button
@@ -147,37 +333,55 @@ export default function GoalTracker({ goals, totals, onGoalsChange, cartCount, o
                     className="flex items-center gap-2.5 shrink-0 group"
                     title="Click to edit goals"
                   >
-                    <ProgressRing value={m.current} max={m.max} color={m.color} />
+                    <ProgressRing
+                      value={m.current}
+                      max={m.max}
+                      color={m.color}
+                      trackClassName={isLight ? 'text-black/10' : 'text-cream'}
+                    />
                     <div className="text-left">
-                      <div className="text-[11px] uppercase tracking-wider text-white font-medium leading-none mb-0.5">
+                      <div className={`text-[11px] uppercase tracking-wider font-medium leading-none mb-0.5 ${isLight ? 'text-warmgray-dark' : 'text-white'}`}>
                         {m.label}
                       </div>
-                      <div className={`text-sm font-semibold leading-none ${isOver ? 'text-red-500' : 'text-white'}`}>
+                      <div className={`text-sm font-semibold leading-none ${isOver ? 'text-red-500' : isLight ? 'text-gray-900' : 'text-white'}`}>
                         {m.format(m.current)}
-                        <span className="text-white font-normal"> / {m.formatMax(m.max)}</span>
+                        <span className={`${isLight ? 'text-warmgray-dark' : 'text-white'} font-normal`}> / {m.formatMax(m.max)}</span>
                       </div>
                     </div>
                   </button>
                 )
               })}
+              </div>
             </div>
 
-            {/* Cart Button */}
-            <button
-              onClick={onCartClick}
-              className="relative shrink-0 w-10 h-10 flex items-center justify-center rounded-full
-                         bg-cream hover:bg-cream transition-colors group"
-            >
-              <svg className="w-5 h-5 text-gray-700 group-hover:text-terra transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-terra text-white text-[11px] font-bold
-                               flex items-center justify-center shadow-sm">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <ThemeSwitch isLight={isLight} onToggle={onThemeToggle} />
+              <ScanMenu
+                isLight={isLight}
+                scanCount={galleryScanCount}
+                onOpenCamera={onOpenCamera}
+                onOpenGallery={onOpenGallery}
+              />
+
+              <button
+                onClick={onCartClick}
+                className={`relative shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-colors group ${
+                  isLight
+                    ? 'border border-black/10 bg-white hover:bg-cream'
+                    : 'border border-white/10 bg-[#111317] hover:bg-[#181b20]'
+                }`}
+              >
+                <svg className={`w-5 h-5 transition-colors group-hover:text-terra ${isLight ? 'text-gray-700' : 'text-white/85'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-terra text-white text-[11px] font-bold
+                                 flex items-center justify-center shadow-sm">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -185,6 +389,7 @@ export default function GoalTracker({ goals, totals, onGoalsChange, cartCount, o
       {/* Goal Editor Modal */}
       {editing && (
         <GoalEditor
+          theme={theme}
           goals={goals}
           onSave={newGoals => onGoalsChange(() => newGoals)}
           onClose={() => setEditing(false)}

@@ -1,7 +1,11 @@
 import { useRef } from 'react'
 
-export default function RestaurantFilter({ restaurants, selected, onSelect, counts }) {
+export default function RestaurantFilter({ restaurants, selected, onSelect, counts, theme }) {
   const scrollRef = useRef(null)
+  const isLight = theme === 'light'
+  const fadeClass = theme === 'light'
+    ? 'from-[#f6f1e8]'
+    : 'from-black'
 
   function getItemCount(name) {
     return counts?.[name] || null
@@ -27,7 +31,15 @@ export default function RestaurantFilter({ restaurants, selected, onSelect, coun
           >
             {name}
             {getItemCount(name) && (
-              <span className={`ml-1.5 text-xs ${selected === name ? 'text-white/70' : 'text-warmgray-light'}`}>
+              <span className={`ml-1.5 text-xs ${
+                selected === name
+                  ? isLight
+                    ? 'text-white/70'
+                    : 'text-black/55'
+                  : isLight
+                    ? 'text-warmgray-light'
+                    : 'text-white/55'
+              }`}>
                 {getItemCount(name)}
               </span>
             )}
@@ -35,7 +47,7 @@ export default function RestaurantFilter({ restaurants, selected, onSelect, coun
         ))}
       </div>
       {/* Fade edges */}
-      <div className="absolute right-0 top-0 bottom-2 w-12 bg-gradient-to-l from-ivory to-transparent pointer-events-none" />
+      <div className={`absolute right-0 top-0 bottom-2 w-12 bg-gradient-to-l ${fadeClass} to-transparent pointer-events-none`} />
     </div>
   )
 }
